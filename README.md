@@ -1,10 +1,10 @@
-# Transaction-Attachment Matching
+# Bank Transaction Reconciliation Assistant
 This project implements a heuristic-based system to match financial transactions with their corresponding attachments (invoices or receipts). The matching logic uses reference numbers, amounts, counterparty names, and date proximity to identify the most likely matches.
 
 ---
 # Table of Contents
 
-1. [Project Overview](#transaction-attachment-matching)
+1. [Project Overview](#bank-transaction-reconciliation-assistant)
 2. [Features](#features)
 3. [Architecture & Technical Decisions](#architecture--technical-decisions)
    1. [Data Representation](#data-representation)
@@ -12,10 +12,12 @@ This project implements a heuristic-based system to match financial transactions
    3. [Heuristic Scoring](#heuristic-scoring)
    4. [Duplicate Handling](#duplicate-handling)
    5. [Matching Flow](#matching-flow)
-4. [File Structure](#file-structure)
-5. [Installation & Running](#installation--running)
+4. [Project Structure](#project-structure)
+5. [Installation & Running](#how-to-run-program)
 6. [Functions Overview](#functions-overview)
 7. [Notes](#notes)
+8. [Additional Work: LLM-Based Interface](#additional-work-llm-based-interface)
+
 ---
 ## Features
 - Normalize reference numbers to ensure consistent matching.
@@ -81,8 +83,8 @@ project-root/
 1. Clone the repository:
 
 ```bash
-git clone <repo-url>
-cd <repo-directory>
+git clone https://github.com/khizraghaffarkk/financial-reconciliation-engine.git
+cd financial-reconciliation-engine
 ```
 
 2. Ensure you have Python 3.9+ installed.
@@ -93,6 +95,7 @@ python3 run.py
 4. The program will output a report of transactions and their matched attachments, including success (✅) or failure (❌) indicators.
 
 ## Functions Overview
+### Heuristic Matching Functions
 - `normalize_reference(reference)` – Standardizes reference numbers.
 - `parse_date(date_str)` – Converts string dates to `datetime` objects.
 - `similar_name(transaction_contact, attachment_party)` – Checks if names are similar.
@@ -101,13 +104,15 @@ python3 run.py
 - `compute_match_score(transaction, attachment)` – Computes heuristic match score.
 - `find_attachment(transaction, attachments)` – Finds the best matching attachment for a transaction.
 - `find_transaction(attachment, transactions)` – Finds the best matching transaction for an attachment.
-
+### LLM-Based Functions
+- `run_matching(transactions, attachments)` – Performs full matching, displays matched/unmatched results, and allows interactive user queries to a local LLM.
+- `llm_chatbot(matched, unmatched_tx, unmatched_att, question)` – Sends a user question along with matched/unmatched transactions and attachments to a local LLM (Llama 3.2) and returns an answer strictly based on the provided context.
 ---
 
 ## Notes
 
 - The scoring thresholds and heuristic weights were chosen to balance accuracy and avoid false positives.
-- The system is modular, so future improvements can replace or augment the scoring function with more advanced matching algorithms (e.g., vector-embeddings, ML-based similarity).
+- The system is modular, so future improvements can replace or augment the scoring function with more advanced matching algorithms (e.g., token-based matching, ML-based similarity).
 
 ## Additional Work: LLM-Based Interface
 
@@ -145,8 +150,7 @@ venv\Scripts\activate      # On Windows
 pip install -r requirements.txt
 ```
 3. Download and run the Ollama server.
-4. Pull any LLM model of your choice, and update its name inside the llm_qa function.
-- The default model used is llama3.2:latest.
+4. Pull any LLM model of your choice, and update its name inside the llm_chatbot function. The default model used is llama3.2:latest.
 5. Run the Streamlit interface:
 ```bash
 streamlit run src/llm_interface.py
